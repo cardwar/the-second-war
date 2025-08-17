@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>덱 편집</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .deck-slots {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 20px;
+    }
+    .deck-slot {
+      border: 2px dashed #666;
+      height: 120px;
+      background: white;
+    }
+    .card-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px;
+    }
+    .card {
+      width: 80px;
+      height: 120px;
+      border: 1px solid #333;
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+  <h2>덱 편집</h2>
+
+  <div class="deck-slots">
+    <div class="deck-slot"></div>
+    <div class="deck-slot"></div>
+    <div class="deck-slot"></div>
+    <div class="deck-slot"></div>
+    <div class="deck-slot"></div>
+    <div class="deck-slot"></div>
+    <div class="deck-slot"></div>
+    <div class="deck-slot"></div>
+  </div>
+
+  <h3>획득한 카드</h3>
+  <div class="card-list">
+    <!-- 카드 이미지가 여기 나중에 들어감 -->
+    <div class="card">카드1</div>
+    <div class="card">카드2</div>
+    <div class="card">카드3</div>
+  </div>
+
+  <div class="navbar">
+    <div class="nav-item" onclick="location.href='cards.html'">카드</div>
+    <div class="nav-item" onclick="location.href='deck.html'">덱</div>
+    <div class="nav-item" onclick="location.href='shop.html'">상점</div>
+    <div class="nav-item" onclick="location.href='history.html'">전투 기록</div>
+  </div>
+</body>
+</html>
