@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>The Second War</title>
   <style>
     html, body { height:100%; margin:0; }
@@ -14,10 +14,7 @@
     /* 배경: 비율 유지 + 화면맞춤 + 클릭 방해 금지 */
     .bg{
       position:fixed; inset:0; width:100%; height:100%;
-      object-fit:contain;
-      z-index:0;
-      pointer-events:none;   /* 배경이 클릭을 가로채지 않게 */
-      user-select:none;
+      object-fit:contain; z-index:0; pointer-events:none; user-select:none;
     }
     /* 시작 버튼 */
     .btn-box{
@@ -45,81 +42,69 @@
     .input{ font-size:16px; padding:12px; border:1px solid #ddd; border-radius:10px; }
     .row{ display:flex; gap:10px; justify-content:center; }
     .hint{ font-size:12px; color:#666; min-height:18px; text-align:center; }
+    .hidden{ display:none; }
   </style>
 </head>
 <body>
-  <!-- 배경 (경로/대소문자 정확히) -->
+  <!-- 배경 -->
   <img src="./image/title.png" alt="" class="bg" aria-hidden="true">
 
   <!-- 시작 버튼 -->
-  <div class="btn-box" id="startButtons">
-    <button class="btn" id="loginBtn">로그인</button>
-    <button class="btn" id="signupBtn">가입하기</button>
+  <div id="startBox" class="btn-box">
+    <button class="btn" id="goLogin">로그인</button>
+    <button class="btn" id="goSignup">가입하기</button>
   </div>
 
   <!-- 가입 폼 -->
-  <div class="card" id="signupCard">
+  <div id="signupBox" class="card">
     <h3 style="text-align:center;margin:6px 0 10px">가입하기</h3>
     <div class="field">
-      <label for="suNickname">닉네임</label>
-      <input id="suNickname" class="input" type="text" autocomplete="username">
+      <label for="suNickname">닉네임 (영문/숫자 3~20자)</label>
+      <input id="suNickname" class="input" type="text" placeholder="예) cardwar" autocomplete="username">
     </div>
     <div class="field">
-      <label for="suPassword">패스워드</label>
-      <input id="suPassword" class="input" type="password" autocomplete="new-password">
+      <label for="suPassword">패스워드 (8자 이상)</label>
+      <input id="suPassword" class="input" type="password" placeholder="********" autocomplete="new-password">
     </div>
     <div class="row" style="margin-top:8px">
-      <button class="btn" id="saveBtn" type="button">저장</button>
-      <button class="btn" id="suCancel" type="button">취소</button>
+      <button class="btn" id="signupBtn" type="button">저장</button>
+      <button class="btn" id="suCancel"  type="button">취소</button>
     </div>
-    <div class="hint" id="suHint"></div>
+    <div id="suHint" class="hint"></div>
   </div>
 
   <!-- 로그인 폼 -->
-  <div class="card" id="loginCard">
+  <div id="loginBox" class="card">
     <h3 style="text-align:center;margin:6px 0 10px">로그인</h3>
     <div class="field">
       <label for="liNickname">닉네임</label>
-      <input id="liNickname" class="input" type="text" autocomplete="username">
+      <input id="liNickname" class="input" type="text" placeholder="예) cardwar" autocomplete="username">
     </div>
     <div class="field">
       <label for="liPassword">패스워드</label>
-      <input id="liPassword" class="input" type="password" autocomplete="current-password">
+      <input id="liPassword" class="input" type="password" placeholder="********" autocomplete="current-password">
     </div>
     <div class="row" style="margin-top:8px">
-      <button class="btn" id="connectBtn" type="button">접속</button>
-      <button class="btn" id="liCancel" type="button">취소</button>
+      <button class="btn" id="loginBtn" type="button">접속</button>
+      <button class="btn" id="liCancel"  type="button">취소</button>
     </div>
-    <div class="hint" id="liHint"></div>
+    <div id="liHint" class="hint"></div>
   </div>
 
+  <!-- 앱 로직 -->
+  <script type="module" src="./app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const $ = (id)=>document.getElementById(id);
+    // 간단 네비게이션(폼 표시/숨김) — Firebase 로직은 app.js에서 처리
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const $ = id => document.getElementById(id);
+      const startBox  = $('startBox');
+      const signupBox = $('signupBox');
+      const loginBox  = $('loginBox');
 
-      const start = $('startButtons');
-      const loginBtn = $('loginBtn');
-      const signupBtn= $('signupBtn');
-
-      const signupCard = $('signupCard');
-      const loginCard  = $('loginCard');
-      const suCancel   = $('suCancel');
-      const liCancel   = $('liCancel');
-
-      // 가시성 토글
-      const show = el => el.style.display = 'block';
-      const hide = el => el.style.display = 'none';
-
-      // 시작 → 가입
-      signupBtn.addEventListener('click', () => { hide(start); show(signupCard); });
-      // 시작 → 로그인
-      loginBtn .addEventListener('click', () => { hide(start); show(loginCard);  });
-      // 취소 → 시작 복귀
-      suCancel .addEventListener('click', () => { hide(signupCard); show(start); });
-      liCancel .addEventListener('click', () => { hide(loginCard);  show(start); });
-
-      // 디버깅: 클릭 이벤트가 들어오는지 콘솔로 확인하고 싶으면 아래 주석 해제
-      // document.addEventListener('click', (e)=>console.log('clicked:', e.target));
+      $('goSignup').onclick = ()=>{ startBox.style.display='none'; signupBox.style.display='block'; };
+      $('goLogin').onclick  = ()=>{ startBox.style.display='none'; loginBox.style.display='block';  };
+      $('suCancel').onclick = ()=>{ signupBox.style.display='none'; startBox.style.display='flex';  };
+      $('liCancel').onclick = ()=>{ loginBox.style.display='none';  startBox.style.display='flex';  };
     });
   </script>
 </body>
