@@ -3,18 +3,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ▼▼▼ 콘솔에서 '웹앱(</>) 추가' 후 SDK 구성으로 채우세요 ▼▼▼ */
+/* ▶ 콘솔의 '웹앱(</>) 추가'에서 SDK 구성 값을 복사해 정확히 채우세요 */
 const firebaseConfig = {
-  apiKey: "AIzaSyA7hIlUS6esgWM_iSxLJUmB2_LfyIPksWo",     // 주신 값
+  apiKey: "AIzaSyA7hIlUS6esgWM_iSxLJUmB2_LfyIPksWo",
   authDomain: "the-second-war.firebaseapp.com",
   projectId: "the-second-war",
   storageBucket: "the-second-war.appspot.com",
-  messagingSenderId: "538510646722",                     // 콘솔 값 확인 권장
-  appId: "YOUR_APP_ID_FROM_CONSOLE"                      // 콘솔에서 복사
+  messagingSenderId: "538510646722",        // 콘솔 값 확인 권장
+  appId: "YOUR_APP_ID_FROM_CONSOLE"         // 콘솔에서 복사
 };
-/* ▲▲▲ 여기는 콘솔 값이 ‘정답’입니다 ▲▲▲ */
 
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
@@ -32,7 +31,7 @@ const NICK_COLLECTION = "nicknames";
 const USERS_COLLECTION= "users";
 const domain = "nick.local";
 
-const normNick = n => n.trim().toLowerCase().replace(/\s+/g,'');
+const normNick    = n => n.trim().toLowerCase().replace(/\s+/g,'');
 const isValidNick = n => /^[a-z0-9]{3,20}$/.test(n);
 const emailFromNick = n => `${n}@${domain}`;
 
@@ -43,7 +42,7 @@ $('signupBtn').addEventListener('click', async ()=>{
   const pass = suPassword.value;
 
   if(!isValidNick(nick)){ suHint.textContent = '닉네임은 영문/숫자 3~20자입니다.'; return; }
-  if(pass.length < 8){ suHint.textContent = '패스워드는 8자 이상 입력해 주세요.'; return; }
+  if(pass.length < 8){   suHint.textContent = '패스워드는 8자 이상 입력해 주세요.'; return; }
 
   try{
     // 닉네임 중복 체크
@@ -52,8 +51,7 @@ $('signupBtn').addEventListener('click', async ()=>{
     if(nickSnap.exists()){ suHint.textContent = '이미 사용 중인 닉네임입니다.'; return; }
 
     // 계정 생성
-    const email = emailFromNick(nick);
-    const cred  = await createUserWithEmailAndPassword(auth, email, pass);
+    const cred = await createUserWithEmailAndPassword(auth, emailFromNick(nick), pass);
 
     // 매핑 & 프로필 저장
     await setDoc(nickRef, { uid: cred.user.uid, createdAt: serverTimestamp() });
@@ -77,17 +75,15 @@ $('loginBtn').addEventListener('click', async ()=>{
   if(!pass){ liHint.textContent = '패스워드를 입력해 주세요.'; return; }
 
   try{
-    // 존재 확인(UX용)
-    const nickRef = doc(db, NICK_COLLECTION, nick);
-    const nickSnap= await getDoc(nickRef);
+    // (UX) 닉네임 존재 확인
+    const nickSnap = await getDoc(doc(db, NICK_COLLECTION, nick));
     if(!nickSnap.exists()){ liHint.textContent = '등록되지 않은 닉네임입니다. 먼저 가입해 주세요.'; return; }
 
     // 로그인
-    const email = emailFromNick(nick);
-    await signInWithEmailAndPassword(auth, email, pass);
+    await signInWithEmailAndPassword(auth, emailFromNick(nick), pass);
 
-    // 성공 → 게임 화면
-    location.href = './game.html';
+    // 성공 → 메인 화면으로 이동
+    location.href = './home.html';
   }catch(e){
     console.error(e);
     liHint.textContent = '로그인 실패: 닉네임 또는 패스워드가 올바르지 않습니다.';
