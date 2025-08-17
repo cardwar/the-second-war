@@ -10,84 +10,42 @@
       margin: 0;
       padding: 0;
     }
-    /* 배경 전체 */
-    .bg {
-      position: fixed;
-      inset: 0;
-      background: url("./bg.png") no-repeat center center / cover;
+    body {
+      /* 배경 전체 이미지 */
+      background: url("./title.png") no-repeat center center / cover;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end; /* 아래쪽 정렬 */
     }
-    /* UI (버튼/타이틀) */
-    .ui {
-      position: relative;
-      z-index: 1;
-      height: 100%;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.7);
-    }
-    .title {
-      font-size: clamp(28px, 6vw, 64px);
-      margin-bottom: 24px;
+    .btn-box {
+      margin-bottom: 80px; /* 초록색 부분 위로 살짝 띄우기 */
+      display: flex;
+      gap: 20px;
     }
     .btn {
-      font-size: clamp(16px, 2.5vw, 22px);
-      padding: 14px 26px;
+      font-size: 20px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 6px 18px rgba(0,0,0,.3);
       background: white;
       color: #222;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.15s;
     }
-    .btn:active { transform: translateY(1px); }
-    /* 게임 캔버스 */
-    #gameCanvas {
-      display: none;
-      position: relative;
-      z-index: 1;
-      margin: 0 auto;
-      background: rgba(255,255,255,0.1);
-      border-radius: 12px;
+    .btn:hover {
+      transform: scale(1.05);
+      background: #f0f0f0;
     }
   </style>
 </head>
 <body>
-  <div class="bg" aria-hidden="true"></div>
-
-  <div class="ui" id="startUI">
-    <div>
-      <div class="title">The Second War</div>
-      <button class="btn" id="startBtn">게임 시작</button>
-    </div>
+  <div class="btn-box">
+    <button class="btn">로그인</button>
+    <button class="btn">가입하기</button>
   </div>
-
-  <canvas id="gameCanvas" width="800" height="450"></canvas>
-
-  <script>
-    const startBtn = document.getElementById('startBtn');
-    const startUI  = document.getElementById('startUI');
-    const canvas   = document.getElementById('gameCanvas');
-    const ctx      = canvas.getContext('2d');
-
-    let x = canvas.width/2, y = canvas.height/2, vx = 3, vy = 2, r = 16;
-
-    function loop(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
-      x+=vx; y+=vy;
-      if(x<r || x>canvas.width-r) vx*=-1;
-      if(y<r || y>canvas.height-r) vy*=-1;
-      requestAnimationFrame(loop);
-    }
-
-    startBtn.addEventListener('click', ()=>{
-      startUI.style.display='none';
-      canvas.style.display='block';
-      loop();
-    });
-  </script>
 </body>
 </html>
+
+
