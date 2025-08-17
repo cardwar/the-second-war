@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>The Second War - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Second War</title>
   <style>
     html, body { height:100%; margin:0; }
     body{
@@ -11,85 +11,131 @@
       background:#000; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
       overflow:hidden;
     }
-    /* 비율 유지 화면 맞춤 */
-    .bg{ position:fixed; inset:0; width:100%; height:100%; object-fit:contain; z-index:-1; }
-    .card{
-      background:rgba(255,255,255,.94); border-radius:14px; box-shadow:0 10px 26px rgba(0,0,0,.25);
-      padding:18px 20px; min-width:min(92vw,380px); margin-bottom:12vh;
+    /* 배경: 화면 맞춤 + 비율 유지 + 클릭 막지 않음 */
+    .bg{
+      position:fixed; inset:0; width:100%; height:100%;
+      object-fit:contain;
+      z-index:0;
+      pointer-events:none;  /* 배경이 클릭을 가로채지 않도록 */
+      user-select:none;
     }
-    .center{ text-align:center; }
-    .row{ display:flex; gap:10px; justify-content:center; }
+
+    /* 버튼 박스는 항상 위 */
+    .btn-box{
+      position:relative;
+      z-index:10;
+      display:flex; gap:16px;
+      margin-bottom:12vh;
+    }
     .btn{
-      font-weight:700; cursor:pointer; border:0; border-radius:12px;
-      padding:12px 20px; background:#fff; box-shadow:0 8px 22px rgba(0,0,0,.25);
+      font-size:clamp(16px,2.1vw,20px);
+      padding:12px 22px; border:0; border-radius:12px;
+      background:#fff; color:#222; font-weight:700; cursor:pointer;
+      box-shadow:0 8px 22px rgba(0,0,0,.25);
+      transition:transform .15s, background .15s, box-shadow .15s;
     }
     .btn:hover{ transform:translateY(-1px); background:#f5f5f5; }
+    .btn:active{ transform:translateY(0); box-shadow:0 6px 16px rgba(0,0,0,.25); }
+
+    /* 폼 카드 (로그인/가입) */
+    .card{
+      position:relative; z-index:10;
+      display:none;
+      background:rgba(255,255,255,.94); border-radius:14px;
+      box-shadow:0 10px 26px rgba(0,0,0,.25);
+      padding:18px 20px; min-width:min(92vw,380px); margin-bottom:12vh;
+    }
     .field{ display:flex; flex-direction:column; gap:6px; margin:10px 0; }
     .input{ font-size:16px; padding:12px; border:1px solid #ddd; border-radius:10px; }
+    .row{ display:flex; gap:10px; justify-content:center; }
     .hint{ font-size:12px; color:#666; min-height:18px; text-align:center; }
-    .hidden{ display:none; }
+
+    @media (max-height: 600px){
+      .btn-box, .card{ margin-bottom:9vh; }
+    }
   </style>
 </head>
 <body>
-  <!-- 배경 -->
+  <!-- 배경 이미지: 경로/대소문자 정확히 -->
   <img src="./image/title.png" alt="" class="bg" aria-hidden="true">
 
   <!-- 시작 버튼 -->
-  <div id="startBox" class="card center">
-    <h2 style="margin:6px 0 14px">The Second War</h2>
-    <div class="row" style="margin-top:8px">
-      <button class="btn" id="goLogin">로그인</button>
-      <button class="btn" id="goSignup">가입하기</button>
-    </div>
+  <div class="btn-box" id="startButtons">
+    <button class="btn" id="loginBtn">로그인</button>
+    <button class="btn" id="signupBtn">가입하기</button>
   </div>
 
   <!-- 가입 폼 -->
-  <div id="signupBox" class="card hidden">
-    <h3 class="center" style="margin:6px 0 10px">가입하기</h3>
+  <div class="card" id="signupCard">
+    <h3 style="text-align:center;margin:6px 0 10px">가입하기</h3>
     <div class="field">
       <label for="suNickname">닉네임</label>
-      <input id="suNickname" class="input" type="text" placeholder="예) cardwar" autocomplete="username">
+      <input id="suNickname" class="input" type="text" autocomplete="username">
     </div>
     <div class="field">
-      <label for="suPassword">패스워드 (8자 이상)</label>
-      <input id="suPassword" class="input" type="password" placeholder="********" autocomplete="new-password">
+      <label for="suPassword">패스워드</label>
+      <input id="suPassword" class="input" type="password" autocomplete="new-password">
     </div>
     <div class="row" style="margin-top:8px">
-      <button class="btn" id="signupBtn">저장</button>
+      <button class="btn" id="saveBtn">저장</button>
       <button class="btn" id="suCancel">취소</button>
     </div>
-    <div id="suHint" class="hint"></div>
+    <div class="hint" id="suHint"></div>
   </div>
 
   <!-- 로그인 폼 -->
-  <div id="loginBox" class="card hidden">
-    <h3 class="center" style="margin:6px 0 10px">로그인</h3>
+  <div class="card" id="loginCard">
+    <h3 style="text-align:center;margin:6px 0 10px">로그인</h3>
     <div class="field">
       <label for="liNickname">닉네임</label>
-      <input id="liNickname" class="input" type="text" placeholder="예) cardwar" autocomplete="username">
+      <input id="liNickname" class="input" type="text" autocomplete="username">
     </div>
     <div class="field">
       <label for="liPassword">패스워드</label>
-      <input id="liPassword" class="input" type="password" placeholder="********" autocomplete="current-password">
+      <input id="liPassword" class="input" type="password" autocomplete="current-password">
     </div>
     <div class="row" style="margin-top:8px">
-      <button class="btn" id="loginBtn">접속</button>
+      <button class="btn" id="connectBtn">접속</button>
       <button class="btn" id="liCancel">취소</button>
     </div>
-    <div id="liHint" class="hint"></div>
+    <div class="hint" id="liHint"></div>
   </div>
 
-  <!-- 로그인 성공 화면(임시) -->
-  <div id="welcomeBox" class="card hidden center">
-    <h3>환영합니다! 🎮</h3>
-    <div id="who"></div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn" id="backHome">처음으로</button>
-      <button class="btn" id="logoutBtn">로그아웃</button>
-    </div>
-  </div>
+  <!-- JS는 바디 끝에서 DOM 준비 후 바인딩 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const $ = (id)=>document.getElementById(id);
+      const start = $('startButtons');
+      const loginBtn = $('loginBtn');
+      const signupBtn= $('signupBtn');
 
-  <!-- Firebase & App -->
-  <script type="module" src="./app.js"></script>
+      const signupCard = $('signupCard');
+      const loginCard  = $('loginCard');
+
+      const suCancel = $('suCancel');
+      const liCancel = $('liCancel');
+
+      // 가시성 토글 유틸
+      const show = el => el.style.display = 'block';
+      const hide = el => el.style.display = 'none';
+
+      // 시작 화면 → 가입
+      signupBtn.addEventListener('click', () => {
+        hide(start); show(signupCard);
+      });
+
+      // 시작 화면 → 로그인
+      loginBtn.addEventListener('click', () => {
+        hide(start); show(loginCard);
+      });
+
+      // 취소 → 시작 화면 복귀
+      suCancel.addEventListener('click', () => { hide(signupCard); show(start); });
+      liCancel.addEventListener('click', () => { hide(loginCard);  show(start); });
+
+      // 디버그: 클릭이 안 먹으면 콘솔에 찍히는지 확인
+      // document.addEventListener('click', (e)=>console.log('click:', e.target));
+    });
+  </script>
 </body>
 </html>
