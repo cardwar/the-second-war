@@ -5,17 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>카드</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .cards-grid{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
+    .card-box{ width:100px; height:140px; border:1px solid #333; background:#fff; }
+    h2{ margin-top:18px; }
+  </style>
 </head>
 <body>
-  <h2>카드</h2>
-  <h3>획득 카드</h3>
-  <div id="owned-cards">
-    <!-- 나중에 카드 이미지 넣을 자리 -->
-  </div>
+  <div class="page-wrap">
+    <h1>카드</h1>
 
-  <h3>미획득 카드</h3>
-  <div id="unowned-cards">
-    <!-- 나중에 카드 이미지 넣을 자리 -->
+    <h2>획득 카드</h2>
+    <div id="owned" class="cards-grid">
+      <!-- 나중에 카드 이미지가 여기에 채워짐 -->
+    </div>
+
+    <h2>미획득 카드</h2>
+    <div id="unowned" class="cards-grid">
+      <!-- 나중에 카드 이미지가 여기에 채워짐 -->
+    </div>
   </div>
 
   <div class="navbar">
